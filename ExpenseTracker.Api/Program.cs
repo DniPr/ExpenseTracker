@@ -1,16 +1,19 @@
-using System.Text;
 using ExpenseTracker.Data;
 using ExpenseTracker.Data.Models.Entities;
+using ExpenseTracker.Data.Seeding;
+using ExpenseTracker.Services.Auth;
+using ExpenseTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ExpenseTracker.Api;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -95,7 +98,17 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        builder.Services.AddScoped<IAuthService, AuthService>();
+
         WebApplication app = builder.Build();
+
+        using (IServiceScope scope = app.Services.CreateScope())
+        {
+            ApplicationDbContext context =
+                scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            await CategorySeeder.SeedAsync(context);
+        }
 
         if (app.Environment.IsDevelopment())
         {

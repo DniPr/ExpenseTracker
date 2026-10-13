@@ -21,10 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ExpenseTracker.Data\ExpenseTracker.Data.csproj" />
     <ProjectReference Include="..\ExpenseTracker.DTOs\ExpenseTracker.DTOs.csproj" />
     <ProjectReference Include="..\ExpenseTracker.Services\ExpenseTracker.Services.csproj" />
