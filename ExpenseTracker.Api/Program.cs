@@ -2,12 +2,14 @@ using ExpenseTracker.Data;
 using ExpenseTracker.Data.Models.Entities;
 using ExpenseTracker.Data.Seeding;
 using ExpenseTracker.Services.Auth;
+using ExpenseTracker.Services.Categories;
 using ExpenseTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi.Models;
 
 namespace ExpenseTracker.Api;
 
@@ -96,9 +98,36 @@ public class Program
         builder.Services.AddControllers();
 
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
 
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Enter your JWT token."
+            });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+        });
         builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<ICategoryService, CategoryService>();
 
         WebApplication app = builder.Build();
 
