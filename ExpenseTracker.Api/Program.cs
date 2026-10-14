@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using ExpenseTracker.Services.Transactions;
 
 namespace ExpenseTracker.Api;
 
@@ -128,6 +129,7 @@ public class Program
         });
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<ICategoryService, CategoryService>();
+        builder.Services.AddScoped<ITransactionService, TransactionService>();
 
         WebApplication app = builder.Build();
 
