@@ -94,12 +94,11 @@ public class Program
                 policy =>
                 {
                     policy
+                        .WithOrigins("https://localhost:7055")
                         .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
+                        .AllowAnyMethod();
                 });
         });
-
         builder.Services.AddControllers();
 
         builder.Services.AddEndpointsApiExplorer();

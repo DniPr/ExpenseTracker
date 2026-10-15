@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="mb-4 text-center">Login</h2>
+
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">
+                                Email
+                            </label>
+
+                            <input type="email"
+                                   id="loginEmail"
+                                   class="form-control"
+                                   required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">
+                                Password
+                            </label>
+
+                            <input type="password"
+                                   id="loginPassword"
+                                   class="form-control"
+                                   required />
+                        </div>
+
+                        <div id="loginMessage"
+                             class="mb-3 text-danger"></div>
+
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            Login
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/auth.js"></script>
+}
