@@ -12,6 +12,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using ExpenseTracker.Services.Transactions;
 using ExpenseTracker.Services.Budgets;
+using ExpenseTracker.Services.RecurringTransactions;
 
 namespace ExpenseTracker.Api;
 
@@ -132,6 +133,7 @@ public class Program
         builder.Services.AddScoped<ICategoryService, CategoryService>();
         builder.Services.AddScoped<ITransactionService, TransactionService>();
         builder.Services.AddScoped<IBudgetService, BudgetService>();
+        builder.Services.AddScoped<IRecurringTransactionService, RecurringTransactionService>();
 
         WebApplication app = builder.Build();
 
