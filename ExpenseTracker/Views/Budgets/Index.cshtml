@@ -1,0 +1,330 @@
+﻿@{
+    ViewData["Title"] = "Budgets";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Budgets</h1>
+            <p class="text-muted mb-0">
+                Track monthly and yearly spending limits
+            </p>
+        </div>
+
+        <button type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#createBudgetModal">
+            Add Budget
+        </button>
+    </div>
+
+    <div id="budgetsMessage"
+         class="alert alert-danger d-none">
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div id="budgetsContainer">
+                <p class="text-muted mb-0">
+                    Loading budgets...
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade"
+     id="createBudgetModal"
+     tabindex="-1"
+     aria-labelledby="createBudgetModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="createBudgetModalLabel">
+                    Add Budget
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <form id="createBudgetForm">
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="budgetAmount"
+                               class="form-label">
+                            Amount
+                        </label>
+
+                        <input type="number"
+                               id="budgetAmount"
+                               class="form-control"
+                               min="0.01"
+                               step="0.01"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="budgetPeriod"
+                               class="form-label">
+                            Period
+                        </label>
+
+                        <select id="budgetPeriod"
+                                class="form-select"
+                                required>
+                            <option value="">
+                                Select period
+                            </option>
+                            <option value="1">
+                                Monthly
+                            </option>
+                            <option value="2">
+                                Yearly
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3"
+                         id="budgetMonthGroup">
+                        <label for="budgetMonth"
+                               class="form-label">
+                            Month
+                        </label>
+
+                        <select id="budgetMonth"
+                                class="form-select">
+                            <option value="">
+                                Select month
+                            </option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="budgetYear"
+                               class="form-label">
+                            Year
+                        </label>
+
+                        <input type="number"
+                               id="budgetYear"
+                               class="form-control"
+                               min="2000"
+                               max="2100"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="budgetCategory"
+                               class="form-label">
+                            Category
+                        </label>
+
+                        <select id="budgetCategory"
+                                class="form-select">
+                            <option value="">
+                                Overall Budget
+                            </option>
+                        </select>
+                    </div>
+
+                    <div id="createBudgetMessage"
+                         class="text-danger">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save Budget
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade"
+     id="editBudgetModal"
+     tabindex="-1"
+     aria-labelledby="editBudgetModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="editBudgetModalLabel">
+                    Edit Budget
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <form id="editBudgetForm">
+
+                <input type="hidden"
+                       id="editBudgetId" />
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="editBudgetAmount"
+                               class="form-label">
+                            Amount
+                        </label>
+
+                        <input type="number"
+                               id="editBudgetAmount"
+                               class="form-control"
+                               min="0.01"
+                               step="0.01"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editBudgetPeriod"
+                               class="form-label">
+                            Period
+                        </label>
+
+                        <select id="editBudgetPeriod"
+                                class="form-select"
+                                required>
+                            <option value="1">
+                                Monthly
+                            </option>
+                            <option value="2">
+                                Yearly
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3"
+                         id="editBudgetMonthGroup">
+                        <label for="editBudgetMonth"
+                               class="form-label">
+                            Month
+                        </label>
+
+                        <select id="editBudgetMonth"
+                                class="form-select">
+                            <option value="">
+                                Select month
+                            </option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editBudgetYear"
+                               class="form-label">
+                            Year
+                        </label>
+
+                        <input type="number"
+                               id="editBudgetYear"
+                               class="form-control"
+                               min="2000"
+                               max="2100"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editBudgetCategory"
+                               class="form-label">
+                            Category
+                        </label>
+
+                        <select id="editBudgetCategory"
+                                class="form-select">
+                            <option value="">
+                                Overall Budget
+                            </option>
+                        </select>
+                    </div>
+
+                    <div id="editBudgetMessage"
+                         class="text-danger">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/budgets.js"
+            asp-append-version="true">
+    </script>
+}

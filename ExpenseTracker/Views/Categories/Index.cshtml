@@ -1,0 +1,296 @@
+﻿@{
+    ViewData["Title"] = "Categories";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Categories</h1>
+            <p class="text-muted mb-0">
+                Manage your income and expense categories
+            </p>
+        </div>
+
+        <button type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#createCategoryModal">
+            Add Category
+        </button>
+    </div>
+
+    <div id="categoriesMessage"
+         class="alert alert-danger d-none">
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <h4 class="mb-3">
+                        Income Categories
+                    </h4>
+
+                    <div id="incomeCategoriesContainer">
+                        <p class="text-muted">
+                            Loading categories...
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <h4 class="mb-3">
+                        Expense Categories
+                    </h4>
+
+                    <div id="expenseCategoriesContainer">
+                        <p class="text-muted">
+                            Loading categories...
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade"
+     id="createCategoryModal"
+     tabindex="-1"
+     aria-labelledby="createCategoryModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="createCategoryModalLabel">
+                    Add Category
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <form id="createCategoryForm">
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="categoryName"
+                               class="form-label">
+                            Name
+                        </label>
+
+                        <input type="text"
+                               id="categoryName"
+                               class="form-control"
+                               maxlength="100"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="categoryDescription"
+                               class="form-label">
+                            Description
+                        </label>
+
+                        <textarea id="categoryDescription"
+                                  class="form-control"
+                                  rows="3"
+                                  maxlength="250"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="categoryIcon"
+                               class="form-label">
+                            Icon
+                        </label>
+
+                        <input type="text"
+                               id="categoryIcon"
+                               class="form-control"
+                               maxlength="50"
+                               placeholder="e.g. dumbbell" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="categoryType"
+                               class="form-label">
+                            Type
+                        </label>
+
+                        <select id="categoryType"
+                                class="form-select"
+                                required>
+                            <option value="">
+                                Select type
+                            </option>
+                            <option value="1">
+                                Income
+                            </option>
+                            <option value="2">
+                                Expense
+                            </option>
+                        </select>
+                    </div>
+
+                    <div id="createCategoryMessage"
+                         class="text-danger">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save Category
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade"
+     id="editCategoryModal"
+     tabindex="-1"
+     aria-labelledby="editCategoryModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="editCategoryModalLabel">
+                    Edit Category
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <form id="editCategoryForm">
+
+                <input type="hidden"
+                       id="editCategoryId" />
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="editCategoryName"
+                               class="form-label">
+                            Name
+                        </label>
+
+                        <input type="text"
+                               id="editCategoryName"
+                               class="form-control"
+                               maxlength="100"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editCategoryDescription"
+                               class="form-label">
+                            Description
+                        </label>
+
+                        <textarea id="editCategoryDescription"
+                                  class="form-control"
+                                  rows="3"
+                                  maxlength="250"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editCategoryIcon"
+                               class="form-label">
+                            Icon
+                        </label>
+
+                        <input type="text"
+                               id="editCategoryIcon"
+                               class="form-control"
+                               maxlength="50" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editCategoryType"
+                               class="form-label">
+                            Type
+                        </label>
+
+                        <select id="editCategoryType"
+                                class="form-select"
+                                required>
+                            <option value="1">
+                                Income
+                            </option>
+                            <option value="2">
+                                Expense
+                            </option>
+                        </select>
+                    </div>
+
+                    <div id="editCategoryMessage"
+                         class="text-danger">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/categories.js"
+            asp-append-version="true">
+    </script>
+}

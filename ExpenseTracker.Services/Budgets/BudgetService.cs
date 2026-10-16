@@ -40,7 +40,7 @@ public class BudgetService : IBudgetService
             .ToListAsync();
     }
 
-    public async Task<BudgetDto?> GetByIdAsync(int id,string userId)
+    public async Task<BudgetDto?> GetByIdAsync(int id, string userId)
     {
         return await context.Budgets
             .AsNoTracking()
@@ -64,9 +64,14 @@ public class BudgetService : IBudgetService
             .FirstOrDefaultAsync();
     }
 
-    public async Task<BudgetDto?> CreateAsync(BudgetCreateDto dto,string userId)
+    public async Task<BudgetDto?> CreateAsync(BudgetCreateDto dto, string userId)
     {
-        if (!IsPeriodValid(dto.Period,dto.Month))
+        if (!IsPeriodValid(dto.Period, dto.Month))
+        {
+            return null;
+        }
+
+        if (!IsBudgetPeriodCurrentOrFuture(dto.Period, dto.Month, dto.Year))
         {
             return null;
         }
@@ -143,7 +148,7 @@ public class BudgetService : IBudgetService
         };
     }
 
-    public async Task<bool> UpdateAsync(int id,BudgetUpdateDto dto,string userId)
+    public async Task<bool> UpdateAsync(int id, BudgetUpdateDto dto, string userId)
     {
         Budget? budget =
             await context.Budgets
@@ -156,7 +161,12 @@ public class BudgetService : IBudgetService
             return false;
         }
 
-        if (!IsPeriodValid(dto.Period,dto.Month))
+        if (!IsPeriodValid(dto.Period, dto.Month))
+        {
+            return false;
+        }
+
+        if (!IsBudgetPeriodCurrentOrFuture(dto.Period, dto.Month, dto.Year))
         {
             return false;
         }
@@ -208,7 +218,7 @@ public class BudgetService : IBudgetService
         return true;
     }
 
-    public async Task<bool> DeleteAsync(int id,string userId)
+    public async Task<bool> DeleteAsync(int id, string userId)
     {
         Budget? budget =
             await context.Budgets
@@ -227,7 +237,7 @@ public class BudgetService : IBudgetService
         return true;
     }
 
-    private static bool IsPeriodValid(BudgetPeriod period,int? month)
+    private static bool IsPeriodValid(BudgetPeriod period, int? month)
     {
         if (period == BudgetPeriod.Monthly)
         {
@@ -237,6 +247,34 @@ public class BudgetService : IBudgetService
         if (period == BudgetPeriod.Yearly)
         {
             return month == null;
+        }
+
+        return false;
+    }
+
+    private static bool IsBudgetPeriodCurrentOrFuture(BudgetPeriod period, int? month, int year)
+    {
+        DateTime now = DateTime.UtcNow;
+
+        if (period == BudgetPeriod.Monthly)
+        {
+            if (!month.HasValue)
+            {
+                return false;
+            }
+
+            DateTime budgetMonth =
+                new DateTime(year, month.Value, 1);
+
+            DateTime currentMonth =
+                new DateTime(now.Year, now.Month, 1);
+
+            return budgetMonth >= currentMonth;
+        }
+
+        if (period == BudgetPeriod.Yearly)
+        {
+            return year >= now.Year;
         }
 
         return false;
