@@ -1,0 +1,384 @@
+﻿@{
+    ViewData["Title"] = "Transactions";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Transactions</h1>
+            <p class="text-muted mb-0">
+                Manage and review your income and expenses
+            </p>
+        </div>
+
+        <button type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#createTransactionModal">
+            Add Transaction
+        </button>
+    </div>
+
+    <div id="transactionsMessage"
+         class="alert alert-danger d-none">
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-3">
+                    <label for="transactionTypeFilter"
+                           class="form-label">
+                        Type
+                    </label>
+
+                    <select id="transactionTypeFilter"
+                            class="form-select">
+                        <option value="">
+                            All Types
+                        </option>
+                        <option value="1">
+                            Income
+                        </option>
+                        <option value="2">
+                            Expense
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="transactionCategoryFilter"
+                           class="form-label">
+                        Category
+                    </label>
+
+                    <select id="transactionCategoryFilter"
+                            class="form-select">
+                        <option value="">
+                            All Categories
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="transactionSearch"
+                           class="form-label">
+                        Search
+                    </label>
+
+                    <input type="text"
+                           id="transactionSearch"
+                           class="form-control"
+                           placeholder="Search description or notes..." />
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button"
+                            id="clearTransactionFilters"
+                            class="btn btn-outline-secondary w-100">
+                        Clear
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div id="transactionsContainer">
+                <p class="text-muted mb-0">
+                    Loading transactions...
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade"
+     id="createTransactionModal"
+     tabindex="-1"
+     aria-labelledby="createTransactionModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="createTransactionModalLabel">
+                    Add Transaction
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <form id="createTransactionForm">
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="transactionDescription"
+                               class="form-label">
+                            Description
+                        </label>
+
+                        <input type="text"
+                               id="transactionDescription"
+                               class="form-control"
+                               maxlength="150"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transactionAmount"
+                               class="form-label">
+                            Amount
+                        </label>
+
+                        <input type="number"
+                               id="transactionAmount"
+                               class="form-control"
+                               min="0.01"
+                               step="0.01"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transactionDate"
+                               class="form-label">
+                            Date
+                        </label>
+
+                        <input type="date"
+                               id="transactionDate"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transactionType"
+                               class="form-label">
+                            Type
+                        </label>
+
+                        <select id="transactionType"
+                                class="form-select"
+                                required>
+                            <option value="">
+                                Select type
+                            </option>
+                            <option value="1">
+                                Income
+                            </option>
+                            <option value="2">
+                                Expense
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transactionCategory"
+                               class="form-label">
+                            Category
+                        </label>
+
+                        <select id="transactionCategory"
+                                class="form-select"
+                                required>
+                            <option value="">
+                                Select category
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transactionNotes"
+                               class="form-label">
+                            Notes
+                        </label>
+
+                        <textarea id="transactionNotes"
+                                  class="form-control"
+                                  rows="3"
+                                  maxlength="500"></textarea>
+                    </div>
+
+                    <div id="createTransactionMessage"
+                         class="text-danger">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save Transaction
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade"
+     id="editTransactionModal"
+     tabindex="-1"
+     aria-labelledby="editTransactionModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="editTransactionModalLabel">
+                    Edit Transaction
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <form id="editTransactionForm">
+
+                <input type="hidden"
+                       id="editTransactionId" />
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="editTransactionDescription"
+                               class="form-label">
+                            Description
+                        </label>
+
+                        <input type="text"
+                               id="editTransactionDescription"
+                               class="form-control"
+                               maxlength="150"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editTransactionAmount"
+                               class="form-label">
+                            Amount
+                        </label>
+
+                        <input type="number"
+                               id="editTransactionAmount"
+                               class="form-control"
+                               min="0.01"
+                               step="0.01"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editTransactionDate"
+                               class="form-label">
+                            Date
+                        </label>
+
+                        <input type="date"
+                               id="editTransactionDate"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editTransactionType"
+                               class="form-label">
+                            Type
+                        </label>
+
+                        <select id="editTransactionType"
+                                class="form-select"
+                                required>
+                            <option value="1">
+                                Income
+                            </option>
+                            <option value="2">
+                                Expense
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editTransactionCategory"
+                               class="form-label">
+                            Category
+                        </label>
+
+                        <select id="editTransactionCategory"
+                                class="form-select"
+                                required>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editTransactionNotes"
+                               class="form-label">
+                            Notes
+                        </label>
+
+                        <textarea id="editTransactionNotes"
+                                  class="form-control"
+                                  rows="3"
+                                  maxlength="500"></textarea>
+                    </div>
+
+                    <div id="editTransactionMessage"
+                         class="text-danger">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/transactions.js"
+            asp-append-version="true">
+    </script>
+}

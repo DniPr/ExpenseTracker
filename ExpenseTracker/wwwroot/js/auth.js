@@ -150,3 +150,56 @@ async function handleRegister(event) {
             "Could not connect to the server.";
     }
 }
+function logout() {
+    localStorage.removeItem("expenseTrackerToken");
+    localStorage.removeItem("expenseTrackerUser");
+
+    window.location.href = "/Account/Login";
+}
+
+function isAuthenticated() {
+    const token = localStorage.getItem("expenseTrackerToken");
+    const userJson = localStorage.getItem("expenseTrackerUser");
+
+    if (!token || !userJson) {
+        return false;
+    }
+
+    try {
+        const user = JSON.parse(userJson);
+
+        if (!user.expiresAt) {
+            return false;
+        }
+
+        const expiresAt = new Date(user.expiresAt);
+        const now = new Date();
+
+        if (expiresAt <= now) {
+            localStorage.removeItem("expenseTrackerToken");
+            localStorage.removeItem("expenseTrackerUser");
+
+            return false;
+        }
+
+        return true;
+    }
+    catch {
+        return false;
+    }
+}
+
+function getCurrentUser() {
+    const userJson = localStorage.getItem("expenseTrackerUser");
+
+    if (!userJson) {
+        return null;
+    }
+
+    try {
+        return JSON.parse(userJson);
+    }
+    catch {
+        return null;
+    }
+}

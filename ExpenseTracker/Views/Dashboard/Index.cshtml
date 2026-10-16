@@ -1,0 +1,200 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Dashboard</h1>
+            <p class="text-muted mb-0">
+                Overview of your personal finances
+            </p>
+        </div>
+    </div>
+
+    <div id="dashboardMessage"
+         class="alert alert-danger d-none">
+    </div>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">
+                        Current Balance
+                    </p>
+
+                    <h3 id="currentBalance">
+                        0.00
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">
+                        Income This Month
+                    </p>
+
+                    <h3 id="incomeThisMonth">
+                        0.00
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">
+                        Expenses This Month
+                    </p>
+
+                    <h3 id="expensesThisMonth">
+                        0.00
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">
+                        Savings This Month
+                    </p>
+
+                    <h3 id="savingsThisMonth">
+                        0.00
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+
+                    <h4 class="mb-3">
+                        Expenses by Category
+                    </h4>
+
+                    <div id="expensesByCategoryContainer">
+                        <p class="text-muted">
+                            No expense data available.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+
+                    <h4 class="mb-3">
+                        Last 6 Months
+                    </h4>
+
+                    <div id="monthlySummaryContainer">
+                        <p class="text-muted">
+                            No monthly data available.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <h4 class="mb-3">
+                Budget Progress
+            </h4>
+
+            <div id="budgetProgressContainer">
+                <p class="text-muted">
+                    No active budgets.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+
+                    <h4 class="mb-3">
+                        Recent Transactions
+                    </h4>
+
+                    <div id="recentTransactionsContainer">
+                        <p class="text-muted">
+                            No transactions yet.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+
+                    <h4 class="mb-3">
+                        Financial Goals
+                    </h4>
+
+                    <div id="financialGoalsContainer">
+                        <p class="text-muted">
+                            No active goals.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <h4 class="mb-3">
+                        Upcoming Recurring Transactions
+                    </h4>
+
+                    <div id="recurringTransactionsContainer">
+                        <p class="text-muted">
+                            No upcoming recurring transactions.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="~/js/dashboard.js"
+            asp-append-version="true">
+    </script>
+}
