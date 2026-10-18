@@ -15,6 +15,8 @@ using ExpenseTracker.Services.Budgets;
 using ExpenseTracker.Services.RecurringTransactions;
 using ExpenseTracker.Services.FinancialGoals;
 using ExpenseTracker.Services.Dashboard;
+using ExpenseTracker.Api.BackgroundServices;
+using ExpenseTracker.Services.RecurringProcessing;
 
 namespace ExpenseTracker.Api;
 
@@ -137,6 +139,8 @@ public class Program
         builder.Services.AddScoped<IRecurringTransactionService, RecurringTransactionService>();
         builder.Services.AddScoped<IFinancialGoalService, FinancialGoalService>();
         builder.Services.AddScoped<IDashboardService, DashboardService>();
+        builder.Services.AddScoped<IRecurringTransactionProcessorService,RecurringTransactionProcessorService>();
+        builder.Services.AddHostedService<RecurringTransactionBackgroundService>();
 
         WebApplication app = builder.Build();
 
