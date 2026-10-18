@@ -7,12 +7,12 @@
     await loadDashboard();
 });
 
+let expensesByCategoryChart = null;
+let monthlySummaryChart = null;
+
 async function loadDashboard() {
     const token =
         localStorage.getItem("expenseTrackerToken");
-
-    const message =
-        document.getElementById("dashboardMessage");
 
     try {
         const response = await fetch(
@@ -36,16 +36,22 @@ async function loadDashboard() {
             return;
         }
 
-        const data = await response.json();
+        const dashboard =
+            await response.json();
 
-        renderSummary(data);
-        renderExpensesByCategory(data.expensesByCategory);
-        renderMonthlySummary(data.monthlySummary);
-        renderBudgetProgress(data.budgetProgress);
-        renderRecentTransactions(data.recentTransactions);
-        renderFinancialGoals(data.activeGoals);
-        renderRecurringTransactions(
-            data.upcomingRecurringTransactions);
+        renderSummaryCards(dashboard);
+        renderExpensesByCategoryChart(
+            dashboard.expensesByCategory);
+        renderMonthlySummaryChart(
+            dashboard.monthlySummary);
+        renderBudgetProgress(
+            dashboard.budgetProgress);
+        renderRecentTransactions(
+            dashboard.recentTransactions);
+        renderActiveGoals(
+            dashboard.activeGoals);
+        renderUpcomingRecurringTransactions(
+            dashboard.upcomingRecurringTransactions);
     }
     catch {
         showDashboardError(
@@ -53,309 +59,707 @@ async function loadDashboard() {
     }
 }
 
-function renderSummary(data) {
-    document.getElementById("currentBalance").textContent =
-        formatMoney(data.currentBalance);
+function renderSummaryCards(dashboard) {
+    setText(
+        "currentBalance",
+        formatMoney(dashboard.currentBalance));
 
-    document.getElementById("incomeThisMonth").textContent =
-        formatMoney(data.incomeThisMonth);
+    setText(
+        "incomeThisMonth",
+        formatMoney(dashboard.incomeThisMonth));
 
-    document.getElementById("expensesThisMonth").textContent =
-        formatMoney(data.expensesThisMonth);
+    setText(
+        "expensesThisMonth",
+        formatMoney(dashboard.expensesThisMonth));
 
-    document.getElementById("savingsThisMonth").textContent =
-        formatMoney(data.savingsThisMonth);
+    setText(
+        "savingsThisMonth",
+        formatMoney(dashboard.savingsThisMonth));
+
+    const balanceElement =
+        document.getElementById(
+            "currentBalance");
+
+    if (balanceElement) {
+        balanceElement.classList.remove(
+            "text-success",
+            "text-danger");
+
+        if (dashboard.currentBalance > 0) {
+            balanceElement.classList.add(
+                "text-success");
+        }
+        else if (dashboard.currentBalance < 0) {
+            balanceElement.classList.add(
+                "text-danger");
+        }
+    }
+
+    const savingsElement =
+        document.getElementById(
+            "savingsThisMonth");
+
+    if (savingsElement) {
+        savingsElement.classList.remove(
+            "text-success",
+            "text-danger");
+
+        if (dashboard.savingsThisMonth > 0) {
+            savingsElement.classList.add(
+                "text-success");
+        }
+        else if (dashboard.savingsThisMonth < 0) {
+            savingsElement.classList.add(
+                "text-danger");
+        }
+    }
 }
 
-function renderExpensesByCategory(items) {
-    const container =
-        document.getElementById(
-            "expensesByCategoryContainer");
+function renderExpensesByCategoryChart(
+    expenseByCategory) {
 
-    if (!items || items.length === 0) {
-        container.innerHTML =
-            `<p class="text-muted">
-                No expense data available.
-            </p>`;
+    const canvas =
+        document.getElementById(
+            "expensesByCategoryChart");
+
+    const emptyMessage =
+        document.getElementById(
+            "expensesByCategoryEmpty");
+
+    if (!canvas) {
+        return;
+    }
+
+    if (expensesByCategoryChart) {
+        expensesByCategoryChart.destroy();
+        expensesByCategoryChart = null;
+    }
+
+    const data =
+        expenseByCategory ?? [];
+
+    if (data.length === 0) {
+        canvas.classList.add("d-none");
+
+        emptyMessage?.classList.remove(
+            "d-none");
 
         return;
     }
 
-    container.innerHTML = items
-        .map(item => `
-            <div class="d-flex
-                        justify-content-between
-                        border-bottom
-                        py-2">
+    canvas.classList.remove("d-none");
 
-                <span>
-                    ${escapeHtml(item.categoryName)}
-                </span>
+    emptyMessage?.classList.add(
+        "d-none");
 
-                <strong>
-                    ${formatMoney(item.amount)}
-                </strong>
+    const labels =
+        data.map(item =>
+            item.categoryName);
 
-            </div>
-        `)
-        .join("");
+    const values =
+        data.map(item =>
+            item.amount);
+
+    const backgroundColors =
+        generateChartColors(
+            values.length,
+            0.72);
+
+    const borderColors =
+        generateChartColors(
+            values.length,
+            1);
+
+    expensesByCategoryChart =
+        new Chart(
+            canvas,
+            {
+                type: "doughnut",
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            data: values,
+                            backgroundColor:
+                                backgroundColors,
+                            borderColor:
+                                borderColors,
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: "62%",
+                    plugins: {
+                        legend: {
+                            position: "bottom"
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: context => {
+                                    const label =
+                                        context.label ?? "";
+
+                                    const value =
+                                        context.raw ?? 0;
+
+                                    return `${label}: ${formatMoney(value)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
 }
 
-function renderMonthlySummary(items) {
-    const container =
+function renderMonthlySummaryChart(
+    monthlySummary) {
+
+    const canvas =
         document.getElementById(
-            "monthlySummaryContainer");
+            "monthlySummaryChart");
 
-    if (!items || items.length === 0) {
-        container.innerHTML =
-            `<p class="text-muted">
-                No monthly data available.
-            </p>`;
-
+    if (!canvas) {
         return;
     }
 
-    container.innerHTML = items
-        .map(item => `
-            <div class="border-bottom py-2">
+    if (monthlySummaryChart) {
+        monthlySummaryChart.destroy();
+        monthlySummaryChart = null;
+    }
 
-                <div class="fw-semibold mb-1">
-                    ${getMonthName(item.month)}
-                    ${item.year}
-                </div>
+    const data =
+        monthlySummary ?? [];
 
-                <div class="d-flex
-                            justify-content-between">
+    const labels =
+        data.map(item =>
+            formatMonthLabel(
+                item.year,
+                item.month));
 
-                    <span>
-                        Income:
-                        ${formatMoney(item.income)}
-                    </span>
+    const incomeData =
+        data.map(item =>
+            item.income);
 
-                    <span>
-                        Expenses:
-                        ${formatMoney(item.expenses)}
-                    </span>
+    const expensesData =
+        data.map(item =>
+            item.expenses);
 
-                </div>
+    monthlySummaryChart =
+        new Chart(
+            canvas,
+            {
+                type: "bar",
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: "Income",
+                            data: incomeData,
+                            backgroundColor:
+                                "rgba(25, 135, 84, 0.7)",
+                            borderColor:
+                                "rgba(25, 135, 84, 1)",
+                            borderWidth: 1
+                        },
+                        {
+                            label: "Expenses",
+                            data: expensesData,
+                            backgroundColor:
+                                "rgba(220, 53, 69, 0.7)",
+                            borderColor:
+                                "rgba(220, 53, 69, 1)",
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value =>
+                                    formatMoney(value)
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: "bottom"
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: context => {
+                                    const label =
+                                        context.dataset.label;
 
-            </div>
-        `)
-        .join("");
+                                    const value =
+                                        context.raw ?? 0;
+
+                                    return `${label}: ${formatMoney(value)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
 }
 
-function renderBudgetProgress(items) {
+function renderBudgetProgress(budgets) {
     const container =
         document.getElementById(
             "budgetProgressContainer");
 
-    if (!items || items.length === 0) {
+    if (!container) {
+        return;
+    }
+
+    if (!budgets ||
+        budgets.length === 0) {
+
         container.innerHTML =
-            `<p class="text-muted">
-                No active budgets.
+            `<p class="text-muted mb-0">
+                No active budgets for the current period.
             </p>`;
 
         return;
     }
 
-    container.innerHTML = items
-        .map(item => {
-            const percentage =
-                Math.min(
-                    Math.max(item.percentageUsed, 0),
-                    100);
+    container.innerHTML =
+        budgets
+            .map(budget => {
 
-            const title =
-                item.categoryName ??
-                "Overall Budget";
+                const categoryName =
+                    budget.categoryName ??
+                    "Overall Budget";
 
-            return `
-                <div class="mb-4">
+                const rawPercentage =
+                    Number(
+                        budget.percentageUsed ??
+                        0);
 
-                    <div class="d-flex
-                                justify-content-between
-                                mb-1">
+                const progressWidth =
+                    Math.min(
+                        100,
+                        Math.max(
+                            0,
+                            rawPercentage));
 
-                        <strong>
-                            ${escapeHtml(title)}
-                        </strong>
+                const progressClass =
+                    getBudgetProgressClass(
+                        rawPercentage);
 
-                        <span>
-                            ${formatMoney(item.spentAmount)}
-                            /
-                            ${formatMoney(item.budgetAmount)}
-                        </span>
+                const remainingClass =
+                    budget.remainingAmount < 0
+                        ? "text-danger"
+                        : "text-muted";
 
-                    </div>
+                return `
+                    <div class="mb-4">
 
-                    <div class="progress"
-                         style="height: 20px;">
+                        <div class="d-flex
+                                    justify-content-between
+                                    align-items-center
+                                    mb-1">
 
-                        <div class="progress-bar"
-                             role="progressbar"
-                             style="width: ${percentage}%">
+                            <strong>
+                                ${escapeHtml(categoryName)}
+                            </strong>
 
-                            ${item.percentageUsed.toFixed(1)}%
+                            <span>
+                                ${rawPercentage.toFixed(1)}%
+                            </span>
 
                         </div>
 
+                        <div class="progress mb-2"
+                             style="height: 10px;">
+
+                            <div class="progress-bar
+                                        ${progressClass}"
+                                 role="progressbar"
+                                 style="width: ${progressWidth}%"
+                                 aria-valuenow="${progressWidth}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex
+                                    justify-content-between
+                                    small">
+
+                            <span class="text-muted">
+                                Spent:
+                                ${formatMoney(
+                    budget.spentAmount)}
+                            </span>
+
+                            <span class="${remainingClass}">
+                                Remaining:
+                                ${formatMoney(
+                        budget.remainingAmount)}
+                            </span>
+
+                        </div>
+
+                        <div class="small text-muted mt-1">
+                            Budget:
+                            ${formatMoney(
+                            budget.budgetAmount)}
+                        </div>
+
                     </div>
-
-                    <small class="text-muted">
-                        Remaining:
-                        ${formatMoney(item.remainingAmount)}
-                    </small>
-
-                </div>
-            `;
-        })
-        .join("");
+                `;
+            })
+            .join("");
 }
 
-function renderRecentTransactions(items) {
+function renderRecentTransactions(
+    transactions) {
+
     const container =
         document.getElementById(
             "recentTransactionsContainer");
 
-    if (!items || items.length === 0) {
+    if (!container) {
+        return;
+    }
+
+    if (!transactions ||
+        transactions.length === 0) {
+
         container.innerHTML =
-            `<p class="text-muted">
-                No transactions yet.
+            `<p class="text-muted mb-0">
+                No recent transactions.
             </p>`;
 
         return;
     }
 
-    container.innerHTML = items
-        .map(item => `
-            <div class="d-flex
-                        justify-content-between
-                        align-items-center
-                        border-bottom
-                        py-2">
+    container.innerHTML =
+        transactions
+            .map(transaction => {
 
-                <div>
-                    <div class="fw-semibold">
-                        ${escapeHtml(item.description)}
-                    </div>
+                const isIncome =
+                    transaction.type === 1;
 
-                    <small class="text-muted">
-                        ${escapeHtml(item.categoryName)}
-                        ·
-                        ${formatDate(item.date)}
-                    </small>
-                </div>
+                const amountClass =
+                    isIncome
+                        ? "text-success"
+                        : "text-danger";
 
-                <strong>
-                    ${item.type === 1 ? "+" : "-"}
-                    ${formatMoney(item.amount)}
-                </strong>
+                const sign =
+                    isIncome
+                        ? "+"
+                        : "-";
 
-            </div>
-        `)
-        .join("");
-}
-
-function renderFinancialGoals(items) {
-    const container =
-        document.getElementById(
-            "financialGoalsContainer");
-
-    if (!items || items.length === 0) {
-        container.innerHTML =
-            `<p class="text-muted">
-                No active goals.
-            </p>`;
-
-        return;
-    }
-
-    container.innerHTML = items
-        .map(item => {
-            const percentage =
-                item.targetAmount > 0
-                    ? Math.min(
-                        (item.currentAmount /
-                            item.targetAmount) * 100,
-                        100)
-                    : 0;
-
-            return `
-                <div class="mb-3">
-
+                return `
                     <div class="d-flex
-                                justify-content-between">
+                                justify-content-between
+                                align-items-center
+                                border-bottom
+                                py-2">
 
-                        <strong>
-                            ${escapeHtml(item.name)}
-                        </strong>
+                        <div>
 
-                        <span>
-                            ${percentage.toFixed(1)}%
-                        </span>
+                            <div class="fw-semibold">
+                                ${escapeHtml(
+                    transaction.description)}
+                            </div>
 
-                    </div>
+                            <div class="small text-muted">
+                                ${escapeHtml(
+                        transaction.categoryName)}
+                                ·
+                                ${formatDate(
+                            transaction.date)}
+                            </div>
 
-                    <div class="progress my-2"
-                         style="height: 18px;">
+                        </div>
 
-                        <div class="progress-bar"
-                             style="width: ${percentage}%">
+                        <div class="fw-bold ${amountClass}">
+                            ${sign}
+                            ${formatMoney(
+                                transaction.amount)}
                         </div>
 
                     </div>
-
-                    <small class="text-muted">
-                        ${formatMoney(item.currentAmount)}
-                        /
-                        ${formatMoney(item.targetAmount)}
-                    </small>
-
-                </div>
-            `;
-        })
-        .join("");
+                `;
+            })
+            .join("");
 }
 
-function renderRecurringTransactions(items) {
+function renderActiveGoals(goals) {
     const container =
         document.getElementById(
-            "recurringTransactionsContainer");
+            "activeGoalsContainer");
 
-    if (!items || items.length === 0) {
+    if (!container) {
+        return;
+    }
+
+    if (!goals ||
+        goals.length === 0) {
+
         container.innerHTML =
-            `<p class="text-muted">
+            `<p class="text-muted mb-0">
+                No active financial goals.
+            </p>`;
+
+        return;
+    }
+
+    container.innerHTML =
+        goals
+            .map(goal => {
+
+                const percentage =
+                    calculatePercentage(
+                        goal.currentAmount,
+                        goal.targetAmount);
+
+                return `
+                    <div class="mb-4">
+
+                        <div class="d-flex
+                                    justify-content-between
+                                    mb-1">
+
+                            <strong>
+                                ${escapeHtml(
+                    goal.name)}
+                            </strong>
+
+                            <span>
+                                ${percentage.toFixed(0)}%
+                            </span>
+
+                        </div>
+
+                        <div class="progress mb-2"
+                             style="height: 10px;">
+
+                            <div class="progress-bar"
+                                 role="progressbar"
+                                 style="width: ${percentage}%"
+                                 aria-valuenow="${percentage}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex
+                                    justify-content-between
+                                    small
+                                    text-muted">
+
+                            <span>
+                                ${formatMoney(
+                        goal.currentAmount)}
+                            </span>
+
+                            <span>
+                                ${formatMoney(
+                            goal.targetAmount)}
+                            </span>
+
+                        </div>
+
+                        ${goal.targetDate
+                        ? `
+                                    <div class="small
+                                                text-muted
+                                                mt-1">
+                                        Target:
+                                        ${formatDate(
+                            goal.targetDate)}
+                                    </div>
+                                `
+                        : ""
+                    }
+
+                    </div>
+                `;
+            })
+            .join("");
+}
+
+function renderUpcomingRecurringTransactions(
+    recurringTransactions) {
+
+    const container =
+        document.getElementById(
+            "upcomingRecurringContainer");
+
+    if (!container) {
+        return;
+    }
+
+    if (!recurringTransactions ||
+        recurringTransactions.length === 0) {
+
+        container.innerHTML =
+            `<p class="text-muted mb-0">
                 No upcoming recurring transactions.
             </p>`;
 
         return;
     }
 
-    container.innerHTML = items
-        .map(item => `
-            <div class="d-flex
-                        justify-content-between
-                        border-bottom
-                        py-2">
+    container.innerHTML =
+        recurringTransactions
+            .map(transaction => {
 
-                <div>
-                    <div class="fw-semibold">
-                        ${escapeHtml(item.description)}
+                const isIncome =
+                    transaction.type === 1;
+
+                const amountClass =
+                    isIncome
+                        ? "text-success"
+                        : "text-danger";
+
+                const sign =
+                    isIncome
+                        ? "+"
+                        : "-";
+
+                return `
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center
+                                border-bottom
+                                py-2">
+
+                        <div>
+
+                            <div class="fw-semibold">
+                                ${escapeHtml(
+                    transaction.description)}
+                            </div>
+
+                            <div class="small text-muted">
+                                ${escapeHtml(
+                        transaction.categoryName)}
+                                ·
+                                ${getIntervalName(
+                            transaction.interval)}
+                            </div>
+
+                            <div class="small text-muted">
+                                Next:
+                                ${formatDate(
+                                transaction.nextExecutionDate)}
+                            </div>
+
+                        </div>
+
+                        <div class="fw-bold ${amountClass}">
+                            ${sign}
+                            ${formatMoney(
+                                    transaction.amount)}
+                        </div>
+
                     </div>
+                `;
+            })
+            .join("");
+}
 
-                    <small class="text-muted">
-                        Next:
-                        ${formatDate(item.nextExecutionDate)}
-                    </small>
-                </div>
+function getBudgetProgressClass(
+    percentage) {
 
-                <strong>
-                    ${formatMoney(item.amount)}
-                </strong>
+    if (percentage >= 100) {
+        return "bg-danger";
+    }
 
-            </div>
-        `)
-        .join("");
+    if (percentage >= 80) {
+        return "bg-warning";
+    }
+
+    return "bg-success";
+}
+
+function calculatePercentage(
+    current,
+    target) {
+
+    if (!target ||
+        target <= 0) {
+        return 0;
+    }
+
+    const percentage =
+        (current / target) * 100;
+
+    return Math.min(
+        100,
+        Math.max(
+            0,
+            percentage));
+}
+
+function getIntervalName(interval) {
+    switch (interval) {
+        case 1:
+            return "Weekly";
+
+        case 2:
+            return "Monthly";
+
+        case 3:
+            return "Yearly";
+
+        default:
+            return "Unknown";
+    }
+}
+
+function formatMonthLabel(
+    year,
+    month) {
+
+    const date =
+        new Date(
+            year,
+            month - 1,
+            1);
+
+    return date.toLocaleString(
+        "en-US",
+        {
+            month: "short",
+            year: "2-digit"
+        });
+}
+
+function generateChartColors(
+    count,
+    alpha) {
+
+    const colors = [];
+
+    for (let i = 0;
+        i < count;
+        i++) {
+
+        const hue =
+            Math.round(
+                (360 / Math.max(
+                    count,
+                    1)) * i);
+
+        colors.push(
+            `hsla(${hue}, 65%, 55%, ${alpha})`);
+    }
+
+    return colors;
 }
 
 function formatMoney(value) {
@@ -369,39 +773,50 @@ function formatMoney(value) {
 }
 
 function formatDate(value) {
+    if (!value) {
+        return "-";
+    }
+
     return new Date(value)
         .toLocaleDateString("bg-BG");
 }
 
-function getMonthName(month) {
-    const date =
-        new Date(2026, month - 1, 1);
+function setText(
+    elementId,
+    value) {
 
-    return date.toLocaleString(
-        "en-US",
-        {
-            month: "short"
-        });
+    const element =
+        document.getElementById(
+            elementId);
+
+    if (element) {
+        element.textContent =
+            value;
+    }
 }
 
 function showDashboardError(messageText) {
     const message =
         document.getElementById(
-            "dashboardMessage");
+            "dashboardError");
 
     if (!message) {
         return;
     }
 
-    message.textContent = messageText;
-    message.classList.remove("d-none");
+    message.textContent =
+        messageText;
+
+    message.classList.remove(
+        "d-none");
 }
 
 function escapeHtml(value) {
     const element =
         document.createElement("div");
 
-    element.textContent = value ?? "";
+    element.textContent =
+        value ?? "";
 
     return element.innerHTML;
 }

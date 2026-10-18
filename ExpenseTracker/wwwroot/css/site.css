@@ -1,22 +1,563 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    html {
+        font-size: 16px;
+    }
 }
 
 body {
-  margin-bottom: 60px;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f5f7fb;
+    color: #212529;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.navbar {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e8ebf0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.navbar-brand {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+}
+
+.navbar .nav-link {
+    color: #5d6470 !important;
+    font-weight: 500;
+    border-radius: 7px;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+    .navbar .nav-link:hover {
+        color: #0d6efd !important;
+        background-color: #f2f6ff;
+    }
+
+.navbar-toggler {
+    border-color: #dee2e6;
+}
+
+    .navbar-toggler:focus {
+        box-shadow: none;
+    }
+
+
+/* =========================================================
+   PAGE HEADINGS
+   ========================================================= */
+
+h1 {
+    font-weight: 700;
+    letter-spacing: -0.8px;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 600;
+}
+
+.text-muted {
+    color: #747d8a !important;
+}
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.card {
+    border: 1px solid #e8ebf0;
+    border-radius: 14px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 18px rgba(24, 39, 75, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .card.shadow-sm {
+        box-shadow: 0 4px 18px rgba(24, 39, 75, 0.05) !important;
+    }
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card h4 {
+    font-size: 1.1rem;
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   DASHBOARD SUMMARY CARDS
+   ========================================================= */
+
+#currentBalance,
+#incomeThisMonth,
+#expensesThisMonth,
+#savingsThisMonth {
+    letter-spacing: -0.8px;
+}
+
+#currentBalance,
+#incomeThisMonth,
+#expensesThisMonth,
+#savingsThisMonth {
+    margin-top: 0.35rem;
+}
+
+
+/* =========================================================
+   CHARTS
+   ========================================================= */
+
+canvas {
+    max-width: 100%;
+}
+
+#expensesByCategoryChart,
+#monthlySummaryChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+.btn-primary {
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.18);
+}
+
+    .btn-primary:hover {
+        box-shadow: 0 6px 14px rgba(13, 110, 253, 0.25);
+    }
+
+.btn-sm {
+    border-radius: 7px;
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.14);
+}
+
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+}
+
+.form-control,
+.form-select {
+    min-height: 42px;
+    border-radius: 8px;
+    border-color: #dce1e8;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+textarea.form-control {
+    min-height: auto;
+}
+
+.form-control:hover,
+.form-select:hover {
+    border-color: #bbc4d0;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #86b7fe;
+}
+
+.form-text {
+    color: #89919c;
+}
+
+.form-check-input {
+    cursor: pointer;
+}
+
+.form-check-label {
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   MODALS
+   ========================================================= */
+
+.modal-content {
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom-color: #edf0f4;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top-color: #edf0f4;
+}
+
+.modal-title {
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   PROGRESS BARS
+   ========================================================= */
+
+.progress {
+    background-color: #edf0f4;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    border-radius: 999px;
+    transition: width 0.5s ease;
+}
+
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+
+.badge {
+    padding: 0.4em 0.65em;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   LIST ITEMS / MODULE CONTENT
+   ========================================================= */
+
+.border-bottom {
+    border-bottom-color: #edf0f4 !important;
+}
+
+.card-body > .border-bottom:last-child,
+#transactionsContainer > .border-bottom:last-child,
+#incomeCategoriesContainer > .border-bottom:last-child,
+#expenseCategoriesContainer > .border-bottom:last-child,
+#budgetsContainer > .border-bottom:last-child,
+#recurringContainer > .border-bottom:last-child,
+#goalsContainer > .border-bottom:last-child,
+#recentTransactionsContainer > .border-bottom:last-child,
+#upcomingRecurringContainer > .border-bottom:last-child {
+    border-bottom: none !important;
+}
+
+#transactionsContainer .border-bottom,
+#budgetsContainer .border-bottom,
+#recurringContainer .border-bottom,
+#goalsContainer .border-bottom {
+    transition: background-color 0.15s ease;
+}
+
+    #transactionsContainer .border-bottom:hover,
+    #budgetsContainer .border-bottom:hover,
+    #recurringContainer .border-bottom:hover,
+    #goalsContainer .border-bottom:hover {
+        background-color: #fafbfc;
+    }
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+#budgetProgressContainer strong,
+#recentTransactionsContainer .fw-semibold,
+#activeGoalsContainer strong,
+#upcomingRecurringContainer .fw-semibold {
+    color: #343a40;
+}
+
+#budgetProgressContainer > div:last-child,
+#activeGoalsContainer > div:last-child {
+    margin-bottom: 0 !important;
+}
+
+#recentTransactionsContainer .border-bottom,
+#upcomingRecurringContainer .border-bottom {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+}
+
+
+/* =========================================================
+   TRANSACTIONS
+   ========================================================= */
+
+#transactionsContainer h5 {
+    font-size: 1rem;
+}
+
+#transactionsContainer .fs-5 {
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   CATEGORIES
+   ========================================================= */
+
+#incomeCategoriesContainer h5,
+#expenseCategoriesContainer h5 {
+    font-size: 1rem;
+}
+
+#incomeCategoriesContainer code,
+#expenseCategoriesContainer code {
+    padding: 0.15rem 0.35rem;
+    border-radius: 5px;
+    background-color: #f1f3f5;
+    color: #495057;
+}
+
+
+/* =========================================================
+   BUDGETS
+   ========================================================= */
+
+#budgetsContainer h5 {
+    font-size: 1rem;
+}
+
+
+/* =========================================================
+   RECURRING TRANSACTIONS
+   ========================================================= */
+
+#recurringContainer h5 {
+    font-size: 1rem;
+}
+
+#recurringContainer .fs-5 {
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   FINANCIAL GOALS
+   ========================================================= */
+
+#goalsContainer h5 {
+    font-size: 1.05rem;
+}
+
+#goalsContainer .progress {
+    height: 12px !important;
+}
+
+
+/* =========================================================
+   ALERTS
+   ========================================================= */
+
+.alert {
+    border: none;
+    border-radius: 10px;
+}
+
+.alert-danger {
+    background-color: #fff0f1;
+    color: #b02a37;
+}
+
+
+/* =========================================================
+   AUTH PAGES
+   ========================================================= */
+
+#loginForm,
+#registerForm {
+    width: 100%;
+}
+
+    #loginForm .form-control,
+    #registerForm .form-control {
+        min-height: 44px;
+    }
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.footer {
+    position: static;
+    width: 100%;
+    margin-top: auto;
+    padding: 1.25rem 0;
+    border-top: 1px solid #e8ebf0;
+    background-color: #ffffff;
+    color: #747d8a;
+}
+
+
+/* =========================================================
+   UTILITY IMPROVEMENTS
+   ========================================================= */
+
+.container {
+    max-width: 1320px;
+}
+
+code {
+    font-size: 0.875em;
+}
+
+a {
+    text-decoration: none;
+}
+
+    a:hover {
+        text-decoration: none;
+    }
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 991.98px) {
+
+    .navbar-nav {
+        padding-top: 0.75rem;
+    }
+
+    .navbar .nav-link {
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
+    }
+
+    .card-body {
+        padding: 1.25rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+
+    .container.py-4 {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+
+    h1 {
+        font-size: 1.7rem;
+    }
+
+    .card-body {
+        padding: 1.1rem;
+    }
+
+    .d-flex.justify-content-between.align-items-center.mb-4 {
+        align-items: flex-start !important;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    #transactionsContainer .d-flex.justify-content-between,
+    #budgetsContainer .d-flex.justify-content-between,
+    #recurringContainer .d-flex.justify-content-between,
+    #goalsContainer .d-flex.justify-content-between {
+        flex-wrap: wrap;
+    }
+
+    #transactionsContainer .text-end,
+    #budgetsContainer .text-end,
+    #recurringContainer .text-end {
+        width: 100%;
+        text-align: left !important;
+        margin-top: 0.5rem;
+    }
+
+    #transactionsContainer .justify-content-end,
+    #budgetsContainer .justify-content-end,
+    #recurringContainer .justify-content-end {
+        justify-content: flex-start !important;
+    }
+
+    #goalsContainer .d-flex.gap-2 {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .modal-dialog {
+        margin: 0.75rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+
+    .btn {
+        min-height: 38px;
+    }
+
+    #currentBalance,
+    #incomeThisMonth,
+    #expensesThisMonth,
+    #savingsThisMonth {
+        font-size: 1.65rem !important;
+    }
+
+    #expensesByCategoryChart,
+    #monthlySummaryChart {
+        max-height: 280px;
+    }
 }
