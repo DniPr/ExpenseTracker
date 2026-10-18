@@ -1,0 +1,379 @@
+﻿@{
+    ViewData["Title"] = "Recurring Transactions";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Recurring Transactions</h1>
+            <p class="text-muted mb-0">
+                Manage repeating income and expenses
+            </p>
+        </div>
+
+        <button type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#createRecurringModal">
+            Add Recurring Transaction
+        </button>
+    </div>
+
+    <div id="recurringMessage"
+         class="alert alert-danger d-none">
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div id="recurringContainer">
+                <p class="text-muted mb-0">
+                    Loading recurring transactions...
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade"
+     id="createRecurringModal"
+     tabindex="-1"
+     aria-labelledby="createRecurringModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="createRecurringModalLabel">
+                    Add Recurring Transaction
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <form id="createRecurringForm">
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="recurringDescription"
+                               class="form-label">
+                            Description
+                        </label>
+
+                        <input type="text"
+                               id="recurringDescription"
+                               class="form-control"
+                               maxlength="150"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="recurringAmount"
+                               class="form-label">
+                            Amount
+                        </label>
+
+                        <input type="number"
+                               id="recurringAmount"
+                               class="form-control"
+                               min="0.01"
+                               step="0.01"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="recurringType"
+                               class="form-label">
+                            Type
+                        </label>
+
+                        <select id="recurringType"
+                                class="form-select"
+                                required>
+                            <option value="">
+                                Select type
+                            </option>
+                            <option value="1">
+                                Income
+                            </option>
+                            <option value="2">
+                                Expense
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="recurringCategory"
+                               class="form-label">
+                            Category
+                        </label>
+
+                        <select id="recurringCategory"
+                                class="form-select"
+                                required>
+                            <option value="">
+                                Select category
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="recurringStartDate"
+                               class="form-label">
+                            Start Date
+                        </label>
+
+                        <input type="date"
+                               id="recurringStartDate"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="recurringEndDate"
+                               class="form-label">
+                            End Date
+                        </label>
+
+                        <input type="date"
+                               id="recurringEndDate"
+                               class="form-control" />
+
+                        <div class="form-text">
+                            Optional
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="recurringInterval"
+                               class="form-label">
+                            Interval
+                        </label>
+
+                        <select id="recurringInterval"
+                                class="form-select"
+                                required>
+                            <option value="">
+                                Select interval
+                            </option>
+                            <option value="1">
+                                Weekly
+                            </option>
+                            <option value="2">
+                                Monthly
+                            </option>
+                            <option value="3">
+                                Yearly
+                            </option>
+                        </select>
+                    </div>
+
+                    <div id="createRecurringMessage"
+                         class="text-danger">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade"
+     id="editRecurringModal"
+     tabindex="-1"
+     aria-labelledby="editRecurringModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="editRecurringModalLabel">
+                    Edit Recurring Transaction
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <form id="editRecurringForm">
+
+                <input type="hidden"
+                       id="editRecurringId" />
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="editRecurringDescription"
+                               class="form-label">
+                            Description
+                        </label>
+
+                        <input type="text"
+                               id="editRecurringDescription"
+                               class="form-control"
+                               maxlength="150"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editRecurringAmount"
+                               class="form-label">
+                            Amount
+                        </label>
+
+                        <input type="number"
+                               id="editRecurringAmount"
+                               class="form-control"
+                               min="0.01"
+                               step="0.01"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editRecurringType"
+                               class="form-label">
+                            Type
+                        </label>
+
+                        <select id="editRecurringType"
+                                class="form-select"
+                                required>
+                            <option value="1">
+                                Income
+                            </option>
+                            <option value="2">
+                                Expense
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editRecurringCategory"
+                               class="form-label">
+                            Category
+                        </label>
+
+                        <select id="editRecurringCategory"
+                                class="form-select"
+                                required>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editRecurringStartDate"
+                               class="form-label">
+                            Start Date
+                        </label>
+
+                        <input type="date"
+                               id="editRecurringStartDate"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editRecurringEndDate"
+                               class="form-label">
+                            End Date
+                        </label>
+
+                        <input type="date"
+                               id="editRecurringEndDate"
+                               class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editRecurringInterval"
+                               class="form-label">
+                            Interval
+                        </label>
+
+                        <select id="editRecurringInterval"
+                                class="form-select"
+                                required>
+                            <option value="1">
+                                Weekly
+                            </option>
+                            <option value="2">
+                                Monthly
+                            </option>
+                            <option value="3">
+                                Yearly
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               id="editRecurringIsActive" />
+
+                        <label class="form-check-label"
+                               for="editRecurringIsActive">
+                            Active
+                        </label>
+                    </div>
+
+                    <div id="editRecurringMessage"
+                         class="text-danger">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/recurring-transactions.js"
+            asp-append-version="true">
+    </script>
+}
