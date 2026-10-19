@@ -42,11 +42,11 @@ let allCategories = [];
 
 async function loadCategories() {
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/categories",
+            getApiUrl("/api/categories"),
             {
                 method: "GET",
                 headers: {
@@ -89,6 +89,7 @@ function filterCreateCategories() {
 
     if (!typeSelect ||
         !categorySelect) {
+
         return;
     }
 
@@ -134,6 +135,7 @@ function filterEditCategories(
 
     if (!typeSelect ||
         !categorySelect) {
+
         return;
     }
 
@@ -168,11 +170,12 @@ function filterEditCategories(
 
 async function loadRecurringTransactions() {
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/recurring-transactions",
+            getApiUrl(
+                "/api/recurring-transactions"),
             {
                 method: "GET",
                 headers: {
@@ -383,7 +386,7 @@ async function createRecurringTransaction(event) {
     event.preventDefault();
 
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     const description =
         document.getElementById(
@@ -455,7 +458,8 @@ async function createRecurringTransaction(event) {
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/recurring-transactions",
+            getApiUrl(
+                "/api/recurring-transactions"),
             {
                 method: "POST",
                 headers: {
@@ -525,7 +529,7 @@ async function createRecurringTransaction(event) {
 
 async function openEditRecurringTransaction(id) {
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     const message =
         document.getElementById(
@@ -537,7 +541,8 @@ async function openEditRecurringTransaction(id) {
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/recurring-transactions/${id}`,
+            getApiUrl(
+                `/api/recurring-transactions/${id}`),
             {
                 method: "GET",
                 headers: {
@@ -620,7 +625,7 @@ async function updateRecurringTransaction(event) {
     event.preventDefault();
 
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     const id =
         Number(
@@ -704,7 +709,8 @@ async function updateRecurringTransaction(event) {
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/recurring-transactions/${id}`,
+            getApiUrl(
+                `/api/recurring-transactions/${id}`),
             {
                 method: "PUT",
                 headers: {
@@ -781,11 +787,12 @@ async function deleteRecurringTransaction(id) {
     }
 
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/recurring-transactions/${id}`,
+            getApiUrl(
+                `/api/recurring-transactions/${id}`),
             {
                 method: "DELETE",
                 headers: {
@@ -846,50 +853,6 @@ function setDefaultStartDate() {
         getTodayInputValue();
 }
 
-function getTodayInputValue() {
-    const today =
-        new Date();
-
-    const year =
-        today.getFullYear();
-
-    const month =
-        String(
-            today.getMonth() + 1)
-            .padStart(2, "0");
-
-    const day =
-        String(
-            today.getDate())
-            .padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-}
-
-function toDateInputValue(value) {
-    if (!value) {
-        return "";
-    }
-
-    const date =
-        new Date(value);
-
-    const year =
-        date.getFullYear();
-
-    const month =
-        String(
-            date.getMonth() + 1)
-            .padStart(2, "0");
-
-    const day =
-        String(
-            date.getDate())
-            .padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-}
-
 function getIntervalName(interval) {
     switch (interval) {
         case 1:
@@ -906,25 +869,6 @@ function getIntervalName(interval) {
     }
 }
 
-function formatMoney(value) {
-    return new Intl.NumberFormat(
-        "bg-BG",
-        {
-            style: "currency",
-            currency: "EUR"
-        })
-        .format(value ?? 0);
-}
-
-function formatDate(value) {
-    if (!value) {
-        return "-";
-    }
-
-    return new Date(value)
-        .toLocaleDateString("bg-BG");
-}
-
 function showRecurringError(messageText) {
     const message =
         document.getElementById(
@@ -937,15 +881,6 @@ function showRecurringError(messageText) {
     message.textContent =
         messageText;
 
-    message.classList.remove("d-none");
-}
-
-function escapeHtml(value) {
-    const element =
-        document.createElement("div");
-
-    element.textContent =
-        value ?? "";
-
-    return element.innerHTML;
+    message.classList.remove(
+        "d-none");
 }

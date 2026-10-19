@@ -44,15 +44,16 @@ let expenseCategories = [];
 
 async function loadExpenseCategories() {
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/categories",
+            getApiUrl("/api/categories"),
             {
                 method: "GET",
                 headers: {
-                    "Authorization": `Bearer ${token}`
+                    "Authorization":
+                        `Bearer ${token}`
                 }
             });
 
@@ -85,10 +86,12 @@ async function loadExpenseCategories() {
 
 function populateBudgetCategories() {
     const createCategorySelect =
-        document.getElementById("budgetCategory");
+        document.getElementById(
+            "budgetCategory");
 
     const editCategorySelect =
-        document.getElementById("editBudgetCategory");
+        document.getElementById(
+            "editBudgetCategory");
 
     if (createCategorySelect) {
         createCategorySelect.innerHTML =
@@ -100,10 +103,14 @@ function populateBudgetCategories() {
             const option =
                 document.createElement("option");
 
-            option.value = category.id;
-            option.textContent = category.name;
+            option.value =
+                category.id;
 
-            createCategorySelect.appendChild(option);
+            option.textContent =
+                category.name;
+
+            createCategorySelect.appendChild(
+                option);
         });
     }
 
@@ -117,25 +124,30 @@ function populateBudgetCategories() {
             const option =
                 document.createElement("option");
 
-            option.value = category.id;
-            option.textContent = category.name;
+            option.value =
+                category.id;
 
-            editCategorySelect.appendChild(option);
+            option.textContent =
+                category.name;
+
+            editCategorySelect.appendChild(
+                option);
         });
     }
 }
 
 async function loadBudgets() {
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/budgets",
+            getApiUrl("/api/budgets"),
             {
                 method: "GET",
                 headers: {
-                    "Authorization": `Bearer ${token}`
+                    "Authorization":
+                        `Bearer ${token}`
                 }
             });
 
@@ -154,7 +166,8 @@ async function loadBudgets() {
         const budgets =
             await response.json();
 
-        renderBudgets(budgets);
+        renderBudgets(
+            budgets);
     }
     catch {
         showBudgetsError(
@@ -164,7 +177,8 @@ async function loadBudgets() {
 
 function renderBudgets(budgets) {
     const container =
-        document.getElementById("budgetsContainer");
+        document.getElementById(
+            "budgetsContainer");
 
     if (!container) {
         return;
@@ -181,104 +195,111 @@ function renderBudgets(budgets) {
         return;
     }
 
-    container.innerHTML = budgets
-        .map(budget => {
-            const periodText =
-                budget.period === 1
-                    ? "Monthly"
-                    : "Yearly";
+    container.innerHTML =
+        budgets
+            .map(budget => {
 
-            const monthText =
-                budget.period === 1 &&
-                    budget.month
-                    ? getMonthName(budget.month)
-                    : "";
+                const periodText =
+                    budget.period === 1
+                        ? "Monthly"
+                        : "Yearly";
 
-            const categoryText =
-                budget.categoryName ??
-                "Overall Budget";
+                const monthText =
+                    budget.period === 1 &&
+                        budget.month
+                        ? getMonthName(
+                            budget.month)
+                        : "";
 
-            return `
-                <div class="border-bottom py-3">
+                const categoryText =
+                    budget.categoryName ??
+                    "Overall Budget";
 
-                    <div class="d-flex
-                                justify-content-between
-                                align-items-center
-                                gap-3">
+                return `
+                    <div class="border-bottom py-3">
 
-                        <div>
+                        <div class="d-flex
+                                    justify-content-between
+                                    align-items-center
+                                    gap-3">
 
-                            <div class="d-flex
-                                        align-items-center
-                                        gap-2
-                                        mb-1">
+                            <div>
 
-                                <h5 class="mb-0">
-                                    ${escapeHtml(categoryText)}
-                                </h5>
+                                <div class="d-flex
+                                            align-items-center
+                                            gap-2
+                                            mb-1">
 
-                                <span class="badge bg-secondary">
-                                    ${periodText}
-                                </span>
+                                    <h5 class="mb-0">
+                                        ${escapeHtml(
+                    categoryText)}
+                                    </h5>
+
+                                    <span class="badge bg-secondary">
+                                        ${periodText}
+                                    </span>
+
+                                </div>
+
+                                <div class="text-muted small">
+                                    ${budget.period === 1
+                        ? `${monthText} ${budget.year}`
+                        : `${budget.year}`
+                    }
+                                </div>
 
                             </div>
 
-                            <div class="text-muted small">
-                                ${budget.period === 1
-                    ? `${monthText} ${budget.year}`
-                    : `${budget.year}`
-                }
-                            </div>
+                            <div class="text-end">
 
-                        </div>
+                                <div class="fw-bold
+                                            fs-5
+                                            mb-2">
+                                    ${formatMoney(
+                        budget.amount)}
+                                </div>
 
-                        <div class="text-end">
+                                <div class="d-flex
+                                            gap-2
+                                            justify-content-end">
 
-                            <div class="fw-bold fs-5 mb-2">
-                                ${formatMoney(budget.amount)}
-                            </div>
+                                    <button type="button"
+                                            class="btn
+                                                   btn-sm
+                                                   btn-outline-primary"
+                                            onclick="openEditBudget(
+                                                ${budget.id}
+                                            )">
+                                        Edit
+                                    </button>
 
-                            <div class="d-flex
-                                        gap-2
-                                        justify-content-end">
+                                    <button type="button"
+                                            class="btn
+                                                   btn-sm
+                                                   btn-outline-danger"
+                                            onclick="deleteBudget(
+                                                ${budget.id}
+                                            )">
+                                        Delete
+                                    </button>
 
-                                <button type="button"
-                                        class="btn
-                                               btn-sm
-                                               btn-outline-primary"
-                                        onclick="openEditBudget(
-                                            ${budget.id}
-                                        )">
-                                    Edit
-                                </button>
-
-                                <button type="button"
-                                        class="btn
-                                               btn-sm
-                                               btn-outline-danger"
-                                        onclick="deleteBudget(
-                                            ${budget.id}
-                                        )">
-                                    Delete
-                                </button>
+                                </div>
 
                             </div>
 
                         </div>
 
                     </div>
-
-                </div>
-            `;
-        })
-        .join("");
+                `;
+            })
+            .join("");
 }
 
 async function createBudget(event) {
     event.preventDefault();
 
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     const amount =
         Number(
@@ -356,7 +377,7 @@ async function createBudget(event) {
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/budgets",
+            getApiUrl("/api/budgets"),
             {
                 method: "POST",
                 headers: {
@@ -423,7 +444,7 @@ async function createBudget(event) {
 
 async function openEditBudget(id) {
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     const message =
         document.getElementById(
@@ -435,7 +456,8 @@ async function openEditBudget(id) {
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/budgets/${id}`,
+            getApiUrl(
+                `/api/budgets/${id}`),
             {
                 method: "GET",
                 headers: {
@@ -511,7 +533,7 @@ async function updateBudget(event) {
     event.preventDefault();
 
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     const id =
         Number(
@@ -596,7 +618,8 @@ async function updateBudget(event) {
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/budgets/${id}`,
+            getApiUrl(
+                `/api/budgets/${id}`),
             {
                 method: "PUT",
                 headers: {
@@ -669,11 +692,12 @@ async function deleteBudget(id) {
     }
 
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/budgets/${id}`,
+            getApiUrl(
+                `/api/budgets/${id}`),
             {
                 method: "DELETE",
                 headers: {
@@ -719,15 +743,19 @@ function updateCreateMonthVisibility() {
 
     if (!monthGroup ||
         !monthSelect) {
+
         return;
     }
 
     if (period === 2) {
-        monthGroup.classList.add("d-none");
+        monthGroup.classList.add(
+            "d-none");
+
         monthSelect.value = "";
     }
     else {
-        monthGroup.classList.remove("d-none");
+        monthGroup.classList.remove(
+            "d-none");
     }
 }
 
@@ -748,15 +776,19 @@ function updateEditMonthVisibility() {
 
     if (!monthGroup ||
         !monthSelect) {
+
         return;
     }
 
     if (period === 2) {
-        monthGroup.classList.add("d-none");
+        monthGroup.classList.add(
+            "d-none");
+
         monthSelect.value = "";
     }
     else {
-        monthGroup.classList.remove("d-none");
+        monthGroup.classList.remove(
+            "d-none");
     }
 }
 
@@ -849,23 +881,16 @@ function isBudgetPeriodCurrentOrFuture(
 
 function getMonthName(month) {
     const date =
-        new Date(2026, month - 1, 1);
+        new Date(
+            2026,
+            month - 1,
+            1);
 
     return date.toLocaleString(
         "en-US",
         {
             month: "long"
         });
-}
-
-function formatMoney(value) {
-    return new Intl.NumberFormat(
-        "bg-BG",
-        {
-            style: "currency",
-            currency: "EUR"
-        })
-        .format(value ?? 0);
 }
 
 function showBudgetsError(messageText) {
@@ -880,15 +905,6 @@ function showBudgetsError(messageText) {
     message.textContent =
         messageText;
 
-    message.classList.remove("d-none");
-}
-
-function escapeHtml(value) {
-    const element =
-        document.createElement("div");
-
-    element.textContent =
-        value ?? "";
-
-    return element.innerHTML;
+    message.classList.remove(
+        "d-none");
 }

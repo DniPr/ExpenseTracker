@@ -12,11 +12,11 @@ let monthlySummaryChart = null;
 
 async function loadDashboard() {
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/dashboard",
+            getApiUrl("/api/dashboard"),
             {
                 method: "GET",
                 headers: {
@@ -40,16 +40,22 @@ async function loadDashboard() {
             await response.json();
 
         renderSummaryCards(dashboard);
+
         renderExpensesByCategoryChart(
             dashboard.expensesByCategory);
+
         renderMonthlySummaryChart(
             dashboard.monthlySummary);
+
         renderBudgetProgress(
             dashboard.budgetProgress);
+
         renderRecentTransactions(
             dashboard.recentTransactions);
+
         renderActiveGoals(
             dashboard.activeGoals);
+
         renderUpcomingRecurringTransactions(
             dashboard.upcomingRecurringTransactions);
     }
@@ -62,19 +68,23 @@ async function loadDashboard() {
 function renderSummaryCards(dashboard) {
     setText(
         "currentBalance",
-        formatMoney(dashboard.currentBalance));
+        formatMoney(
+            dashboard.currentBalance));
 
     setText(
         "incomeThisMonth",
-        formatMoney(dashboard.incomeThisMonth));
+        formatMoney(
+            dashboard.incomeThisMonth));
 
     setText(
         "expensesThisMonth",
-        formatMoney(dashboard.expensesThisMonth));
+        formatMoney(
+            dashboard.expensesThisMonth));
 
     setText(
         "savingsThisMonth",
-        formatMoney(dashboard.savingsThisMonth));
+        formatMoney(
+            dashboard.savingsThisMonth));
 
     const balanceElement =
         document.getElementById(
@@ -116,7 +126,7 @@ function renderSummaryCards(dashboard) {
 }
 
 function renderExpensesByCategoryChart(
-    expenseByCategory) {
+    expensesByCategory) {
 
     const canvas =
         document.getElementById(
@@ -136,10 +146,11 @@ function renderExpensesByCategoryChart(
     }
 
     const data =
-        expenseByCategory ?? [];
+        expensesByCategory ?? [];
 
     if (data.length === 0) {
-        canvas.classList.add("d-none");
+        canvas.classList.add(
+            "d-none");
 
         emptyMessage?.classList.remove(
             "d-none");
@@ -147,7 +158,8 @@ function renderExpensesByCategoryChart(
         return;
     }
 
-    canvas.classList.remove("d-none");
+    canvas.classList.remove(
+        "d-none");
 
     emptyMessage?.classList.add(
         "d-none");
@@ -762,25 +774,6 @@ function generateChartColors(
     return colors;
 }
 
-function formatMoney(value) {
-    return new Intl.NumberFormat(
-        "bg-BG",
-        {
-            style: "currency",
-            currency: "EUR"
-        })
-        .format(value ?? 0);
-}
-
-function formatDate(value) {
-    if (!value) {
-        return "-";
-    }
-
-    return new Date(value)
-        .toLocaleDateString("bg-BG");
-}
-
 function setText(
     elementId,
     value) {
@@ -809,14 +802,4 @@ function showDashboardError(messageText) {
 
     message.classList.remove(
         "d-none");
-}
-
-function escapeHtml(value) {
-    const element =
-        document.createElement("div");
-
-    element.textContent =
-        value ?? "";
-
-    return element.innerHTML;
 }

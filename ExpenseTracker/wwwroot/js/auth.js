@@ -1,32 +1,51 @@
 ﻿document.addEventListener("DOMContentLoaded", () => {
-    const loginForm = document.getElementById("loginForm");
-    const registerForm = document.getElementById("registerForm");
+    const loginForm =
+        document.getElementById("loginForm");
 
-    if (loginForm) {
-        loginForm.addEventListener("submit", handleLogin);
-    }
+    const registerForm =
+        document.getElementById("registerForm");
 
-    if (registerForm) {
-        registerForm.addEventListener("submit", handleRegister);
-    }
+    loginForm?.addEventListener(
+        "submit",
+        handleLogin);
+
+    registerForm?.addEventListener(
+        "submit",
+        handleRegister);
 });
 
 async function handleLogin(event) {
     event.preventDefault();
 
-    const email = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value;
-    const message = document.getElementById("loginMessage");
+    const email =
+        document.getElementById("email")
+            .value
+            .trim();
+
+    const password =
+        document.getElementById("password")
+            .value;
+
+    const message =
+        document.getElementById("loginMessage");
 
     message.textContent = "";
 
+    if (!email || !password) {
+        message.textContent =
+            "Please enter email and password.";
+
+        return;
+    }
+
     try {
         const response = await fetch(
-            "https://localhost:7063/api/auth/login",
+            getApiUrl("/api/auth/login"),
             {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
                     email,
@@ -34,28 +53,31 @@ async function handleLogin(event) {
                 })
             });
 
-        const data = await response.json();
-
         if (!response.ok) {
+            let errorMessage =
+                "Invalid email or password.";
+
+            try {
+                const data =
+                    await response.json();
+
+                errorMessage =
+                    data.message ??
+                    errorMessage;
+            }
+            catch {
+            }
+
             message.textContent =
-                data.message ?? "Login failed.";
+                errorMessage;
 
             return;
         }
 
-        localStorage.setItem(
-            "expenseTrackerToken",
-            data.token);
+        const data =
+            await response.json();
 
-        localStorage.setItem(
-            "expenseTrackerUser",
-            JSON.stringify({
-                userId: data.userId,
-                email: data.email,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                expiresAt: data.expiresAt
-            }));
+        saveAuthenticationData(data);
 
         window.location.href = "/";
     }
@@ -69,32 +91,44 @@ async function handleRegister(event) {
     event.preventDefault();
 
     const firstName =
-        document.getElementById("registerFirstName")
+        document.getElementById("firstName")
             .value
             .trim();
 
     const lastName =
-        document.getElementById("registerLastName")
+        document.getElementById("lastName")
             .value
             .trim();
 
     const email =
-        document.getElementById("registerEmail")
+        document.getElementById("email")
             .value
             .trim();
 
     const password =
-        document.getElementById("registerPassword")
+        document.getElementById("password")
             .value;
 
     const confirmPassword =
-        document.getElementById("registerConfirmPassword")
+        document.getElementById("confirmPassword")
             .value;
 
     const message =
         document.getElementById("registerMessage");
 
     message.textContent = "";
+
+    if (!firstName ||
+        !lastName ||
+        !email ||
+        !password ||
+        !confirmPassword) {
+
+        message.textContent =
+            "Please fill in all required fields.";
+
+        return;
+    }
 
     if (password !== confirmPassword) {
         message.textContent =
@@ -105,11 +139,12 @@ async function handleRegister(event) {
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/auth/register",
+            getApiUrl("/api/auth/register"),
             {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
                     firstName,
@@ -120,28 +155,31 @@ async function handleRegister(event) {
                 })
             });
 
-        const data = await response.json();
-
         if (!response.ok) {
+            let errorMessage =
+                "Registration failed.";
+
+            try {
+                const data =
+                    await response.json();
+
+                errorMessage =
+                    data.message ??
+                    errorMessage;
+            }
+            catch {
+            }
+
             message.textContent =
-                data.message ?? "Registration failed.";
+                errorMessage;
 
             return;
         }
 
-        localStorage.setItem(
-            "expenseTrackerToken",
-            data.token);
+        const data =
+            await response.json();
 
-        localStorage.setItem(
-            "expenseTrackerUser",
-            JSON.stringify({
-                userId: data.userId,
-                email: data.email,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                expiresAt: data.expiresAt
-            }));
+        saveAuthenticationData(data);
 
         window.location.href = "/";
     }
@@ -150,47 +188,83 @@ async function handleRegister(event) {
             "Could not connect to the server.";
     }
 }
-function logout() {
-    localStorage.removeItem("expenseTrackerToken");
-    localStorage.removeItem("expenseTrackerUser");
 
-    window.location.href = "/Account/Login";
+function saveAuthenticationData(data) {
+    localStorage.setItem(
+        "expenseTrackerToken",
+        data.token);
+
+    localStorage.setItem(
+        "expenseTrackerUser",
+        JSON.stringify({
+            userId: data.userId,
+            email: data.email,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            expiresAt: data.expiresAt
+        }));
+}
+
+function logout() {
+    localStorage.removeItem(
+        "expenseTrackerToken");
+
+    localStorage.removeItem(
+        "expenseTrackerUser");
+
+    window.location.href =
+        "/Account/Login";
 }
 
 function isAuthenticated() {
-    const token = localStorage.getItem("expenseTrackerToken");
-    const userJson = localStorage.getItem("expenseTrackerUser");
+    const token =
+        localStorage.getItem(
+            "expenseTrackerToken");
+
+    const userJson =
+        localStorage.getItem(
+            "expenseTrackerUser");
 
     if (!token || !userJson) {
         return false;
     }
 
     try {
-        const user = JSON.parse(userJson);
+        const user =
+            JSON.parse(userJson);
 
         if (!user.expiresAt) {
+            clearAuthenticationData();
             return false;
         }
 
-        const expiresAt = new Date(user.expiresAt);
-        const now = new Date();
+        const expiresAt =
+            new Date(user.expiresAt);
 
-        if (expiresAt <= now) {
-            localStorage.removeItem("expenseTrackerToken");
-            localStorage.removeItem("expenseTrackerUser");
+        if (Number.isNaN(
+            expiresAt.getTime())) {
 
+            clearAuthenticationData();
+            return false;
+        }
+
+        if (expiresAt <= new Date()) {
+            clearAuthenticationData();
             return false;
         }
 
         return true;
     }
     catch {
+        clearAuthenticationData();
         return false;
     }
 }
 
 function getCurrentUser() {
-    const userJson = localStorage.getItem("expenseTrackerUser");
+    const userJson =
+        localStorage.getItem(
+            "expenseTrackerUser");
 
     if (!userJson) {
         return null;
@@ -202,4 +276,17 @@ function getCurrentUser() {
     catch {
         return null;
     }
+}
+
+function getAuthToken() {
+    return localStorage.getItem(
+        "expenseTrackerToken");
+}
+
+function clearAuthenticationData() {
+    localStorage.removeItem(
+        "expenseTrackerToken");
+
+    localStorage.removeItem(
+        "expenseTrackerUser");
 }

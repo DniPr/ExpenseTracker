@@ -8,13 +8,6 @@ public class Program
 
         builder.Services.AddControllersWithViews();
 
-        builder.Services.AddHttpClient("ExpenseTrackerApi", client =>
-        {
-            client.BaseAddress = new Uri(
-                builder.Configuration["ApiSettings:BaseUrl"]
-                ?? throw new InvalidOperationException("API base URL was not found."));
-        });
-
         WebApplication app = builder.Build();
 
         if (!app.Environment.IsDevelopment())

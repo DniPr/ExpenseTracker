@@ -23,11 +23,11 @@
 
 async function loadFinancialGoals() {
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/financial-goals",
+            getApiUrl("/api/financial-goals"),
             {
                 method: "GET",
                 headers: {
@@ -51,7 +51,8 @@ async function loadFinancialGoals() {
         const goals =
             await response.json();
 
-        renderFinancialGoals(goals);
+        renderFinancialGoals(
+            goals);
     }
     catch {
         showGoalsError(
@@ -100,7 +101,8 @@ function renderFinancialGoals(goals) {
 
                 const targetDate =
                     goal.targetDate
-                        ? formatDate(goal.targetDate)
+                        ? formatDate(
+                            goal.targetDate)
                         : "No target date";
 
                 return `
@@ -236,8 +238,7 @@ async function createFinancialGoal(event) {
     event.preventDefault();
 
     const token =
-        localStorage.getItem(
-            "expenseTrackerToken");
+        getAuthToken();
 
     const name =
         document.getElementById(
@@ -285,7 +286,8 @@ async function createFinancialGoal(event) {
     }
 
     if (targetDateValue &&
-        isDateInPast(targetDateValue)) {
+        isDateInPast(
+            targetDateValue)) {
 
         message.textContent =
             "Target date cannot be in the past.";
@@ -295,7 +297,8 @@ async function createFinancialGoal(event) {
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/financial-goals",
+            getApiUrl(
+                "/api/financial-goals"),
             {
                 method: "POST",
                 headers: {
@@ -364,8 +367,7 @@ async function createFinancialGoal(event) {
 
 async function openEditFinancialGoal(id) {
     const token =
-        localStorage.getItem(
-            "expenseTrackerToken");
+        getAuthToken();
 
     const message =
         document.getElementById(
@@ -377,7 +379,8 @@ async function openEditFinancialGoal(id) {
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/financial-goals/${id}`,
+            getApiUrl(
+                `/api/financial-goals/${id}`),
             {
                 method: "GET",
                 headers: {
@@ -452,8 +455,7 @@ async function updateFinancialGoal(event) {
     event.preventDefault();
 
     const token =
-        localStorage.getItem(
-            "expenseTrackerToken");
+        getAuthToken();
 
     const id =
         Number(
@@ -515,7 +517,8 @@ async function updateFinancialGoal(event) {
     }
 
     if (targetDateValue &&
-        isDateInPast(targetDateValue)) {
+        isDateInPast(
+            targetDateValue)) {
 
         message.textContent =
             "Target date cannot be in the past.";
@@ -525,7 +528,8 @@ async function updateFinancialGoal(event) {
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/financial-goals/${id}`,
+            getApiUrl(
+                `/api/financial-goals/${id}`),
             {
                 method: "PUT",
                 headers: {
@@ -601,12 +605,12 @@ async function deleteFinancialGoal(id) {
     }
 
     const token =
-        localStorage.getItem(
-            "expenseTrackerToken");
+        getAuthToken();
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/financial-goals/${id}`,
+            getApiUrl(
+                `/api/financial-goals/${id}`),
             {
                 method: "DELETE",
                 headers: {
@@ -641,6 +645,7 @@ function calculateGoalPercentage(
 
     if (!targetAmount ||
         targetAmount <= 0) {
+
         return 0;
     }
 
@@ -728,49 +733,6 @@ function isDateInPast(value) {
     return selectedDate < today;
 }
 
-function toDateInputValue(value) {
-    if (!value) {
-        return "";
-    }
-
-    const date =
-        new Date(value);
-
-    const year =
-        date.getFullYear();
-
-    const month =
-        String(
-            date.getMonth() + 1)
-            .padStart(2, "0");
-
-    const day =
-        String(
-            date.getDate())
-            .padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-}
-
-function formatMoney(value) {
-    return new Intl.NumberFormat(
-        "bg-BG",
-        {
-            style: "currency",
-            currency: "EUR"
-        })
-        .format(value ?? 0);
-}
-
-function formatDate(value) {
-    if (!value) {
-        return "-";
-    }
-
-    return new Date(value)
-        .toLocaleDateString("bg-BG");
-}
-
 function showGoalsError(messageText) {
     const message =
         document.getElementById(
@@ -783,15 +745,6 @@ function showGoalsError(messageText) {
     message.textContent =
         messageText;
 
-    message.classList.remove("d-none");
-}
-
-function escapeHtml(value) {
-    const element =
-        document.createElement("div");
-
-    element.textContent =
-        value ?? "";
-
-    return element.innerHTML;
+    message.classList.remove(
+        "d-none");
 }

@@ -76,11 +76,11 @@ let allCategories = [];
 
 async function loadCategories() {
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/categories",
+            getApiUrl("/api/categories"),
             {
                 method: "GET",
                 headers: {
@@ -96,10 +96,12 @@ async function loadCategories() {
         if (!response.ok) {
             showTransactionsError(
                 "Could not load categories.");
+
             return;
         }
 
-        allCategories = await response.json();
+        allCategories =
+            await response.json();
 
         populateCategoryFilter();
         filterCreateCategories();
@@ -128,8 +130,11 @@ function populateCategoryFilter() {
         const option =
             document.createElement("option");
 
-        option.value = category.id;
-        option.textContent = category.name;
+        option.value =
+            category.id;
+
+        option.textContent =
+            category.name;
 
         categoryFilter.appendChild(option);
     });
@@ -137,12 +142,16 @@ function populateCategoryFilter() {
 
 function filterCreateCategories() {
     const typeSelect =
-        document.getElementById("transactionType");
+        document.getElementById(
+            "transactionType");
 
     const categorySelect =
-        document.getElementById("transactionCategory");
+        document.getElementById(
+            "transactionCategory");
 
-    if (!typeSelect || !categorySelect) {
+    if (!typeSelect ||
+        !categorySelect) {
+
         return;
     }
 
@@ -165,21 +174,30 @@ function filterCreateCategories() {
             const option =
                 document.createElement("option");
 
-            option.value = category.id;
-            option.textContent = category.name;
+            option.value =
+                category.id;
+
+            option.textContent =
+                category.name;
 
             categorySelect.appendChild(option);
         });
 }
 
-function filterEditCategories(selectedCategoryId = null) {
+function filterEditCategories(
+    selectedCategoryId = null) {
+
     const typeSelect =
-        document.getElementById("editTransactionType");
+        document.getElementById(
+            "editTransactionType");
 
     const categorySelect =
-        document.getElementById("editTransactionCategory");
+        document.getElementById(
+            "editTransactionCategory");
 
-    if (!typeSelect || !categorySelect) {
+    if (!typeSelect ||
+        !categorySelect) {
+
         return;
     }
 
@@ -195,11 +213,16 @@ function filterEditCategories(selectedCategoryId = null) {
             const option =
                 document.createElement("option");
 
-            option.value = category.id;
-            option.textContent = category.name;
+            option.value =
+                category.id;
+
+            option.textContent =
+                category.name;
 
             if (selectedCategoryId &&
-                category.id === Number(selectedCategoryId)) {
+                category.id ===
+                Number(selectedCategoryId)) {
+
                 option.selected = true;
             }
 
@@ -209,29 +232,37 @@ function filterEditCategories(selectedCategoryId = null) {
 
 async function loadTransactions() {
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     const type =
         document.getElementById(
-            "transactionTypeFilter")?.value;
+            "transactionTypeFilter")
+            ?.value;
 
     const categoryId =
         document.getElementById(
-            "transactionCategoryFilter")?.value;
+            "transactionCategoryFilter")
+            ?.value;
 
     const searchTerm =
         document.getElementById(
-            "transactionSearch")?.value.trim();
+            "transactionSearch")
+            ?.value
+            .trim();
 
     const queryParams =
         new URLSearchParams();
 
     if (type) {
-        queryParams.append("type", type);
+        queryParams.append(
+            "type",
+            type);
     }
 
     if (categoryId) {
-        queryParams.append("categoryId", categoryId);
+        queryParams.append(
+            "categoryId",
+            categoryId);
     }
 
     if (searchTerm) {
@@ -243,14 +274,14 @@ async function loadTransactions() {
     const queryString =
         queryParams.toString();
 
-    const url =
+    const path =
         queryString
-            ? `https://localhost:7063/api/transactions?${queryString}`
-            : "https://localhost:7063/api/transactions";
+            ? `/api/transactions?${queryString}`
+            : "/api/transactions";
 
     try {
         const response = await fetch(
-            url,
+            getApiUrl(path),
             {
                 method: "GET",
                 headers: {
@@ -266,13 +297,15 @@ async function loadTransactions() {
         if (!response.ok) {
             showTransactionsError(
                 "Could not load transactions.");
+
             return;
         }
 
         const transactions =
             await response.json();
 
-        renderTransactions(transactions);
+        renderTransactions(
+            transactions);
     }
     catch {
         showTransactionsError(
@@ -280,7 +313,9 @@ async function loadTransactions() {
     }
 }
 
-function renderTransactions(transactions) {
+function renderTransactions(
+    transactions) {
+
     const container =
         document.getElementById(
             "transactionsContainer");
@@ -300,102 +335,123 @@ function renderTransactions(transactions) {
         return;
     }
 
-    container.innerHTML = transactions
-        .map(transaction => {
-            const isIncome =
-                transaction.type === 1;
+    container.innerHTML =
+        transactions
+            .map(transaction => {
 
-            const sign =
-                isIncome ? "+" : "-";
+                const isIncome =
+                    transaction.type === 1;
 
-            const amountClass =
-                isIncome
-                    ? "text-success"
-                    : "text-danger";
+                const sign =
+                    isIncome
+                        ? "+"
+                        : "-";
 
-            const typeText =
-                isIncome
-                    ? "Income"
-                    : "Expense";
+                const amountClass =
+                    isIncome
+                        ? "text-success"
+                        : "text-danger";
 
-            return `
-                <div class="d-flex
-                            justify-content-between
-                            align-items-center
-                            border-bottom
-                            py-3">
+                const typeText =
+                    isIncome
+                        ? "Income"
+                        : "Expense";
 
-                    <div>
-                        <div class="d-flex
-                                    align-items-center
-                                    gap-2">
+                return `
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center
+                                border-bottom
+                                py-3">
 
-                            <h5 class="mb-0">
-                                ${escapeHtml(transaction.description)}
-                            </h5>
+                        <div>
 
-                            <span class="badge
-                                ${isIncome
-                    ? "bg-success"
-                    : "bg-danger"}">
-                                ${typeText}
-                            </span>
+                            <div class="d-flex
+                                        align-items-center
+                                        gap-2">
+
+                                <h5 class="mb-0">
+                                    ${escapeHtml(
+                    transaction.description)}
+                                </h5>
+
+                                <span class="badge
+                                    ${isIncome
+                        ? "bg-success"
+                        : "bg-danger"}">
+                                    ${typeText}
+                                </span>
+
+                            </div>
+
+                            <div class="text-muted small mt-1">
+                                ${escapeHtml(
+                            transaction.categoryName)}
+                                ·
+                                ${formatDate(
+                                transaction.date)}
+                            </div>
+
+                            ${transaction.notes
+                        ? `
+                                        <div class="small mt-1">
+                                            ${escapeHtml(
+                            transaction.notes)}
+                                        </div>
+                                    `
+                        : ""
+                    }
+
                         </div>
 
-                        <div class="text-muted small mt-1">
-                            ${escapeHtml(transaction.categoryName)}
-                            ·
-                            ${formatDate(transaction.date)}
+                        <div class="text-end">
+
+                            <div class="fw-bold
+                                        fs-5
+                                        ${amountClass}">
+                                ${sign}
+                                ${formatMoney(
+                        transaction.amount)}
+                            </div>
+
+                            <div class="mt-2
+                                        d-flex
+                                        gap-2
+                                        justify-content-end">
+
+                                <button type="button"
+                                        class="btn
+                                               btn-sm
+                                               btn-outline-primary"
+                                        onclick="openEditTransaction(
+                                            ${transaction.id}
+                                        )">
+                                    Edit
+                                </button>
+
+                                <button type="button"
+                                        class="btn
+                                               btn-sm
+                                               btn-outline-danger"
+                                        onclick="deleteTransaction(
+                                            ${transaction.id}
+                                        )">
+                                    Delete
+                                </button>
+
+                            </div>
+
                         </div>
 
-                        ${transaction.notes
-                    ? `
-                                    <div class="small mt-1">
-                                        ${escapeHtml(transaction.notes)}
-                                    </div>
-                                `
-                    : ""
-                }
                     </div>
-
-                    <div class="text-end">
-
-                        <div class="fw-bold fs-5 ${amountClass}">
-                            ${sign}
-                            ${formatMoney(transaction.amount)}
-                        </div>
-
-                        <div class="mt-2 d-flex gap-2 justify-content-end">
-
-                            <button type="button"
-                                    class="btn btn-sm btn-outline-primary"
-                                    onclick="openEditTransaction(
-                                        ${transaction.id}
-                                    )">
-                                Edit
-                            </button>
-
-                            <button type="button"
-                                    class="btn btn-sm btn-outline-danger"
-                                    onclick="deleteTransaction(
-                                        ${transaction.id}
-                                    )">
-                                Delete
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-            `;
-        })
-        .join("");
+                `;
+            })
+            .join("");
 }
 
 async function openEditTransaction(id) {
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     const message =
         document.getElementById(
@@ -407,7 +463,8 @@ async function openEditTransaction(id) {
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/transactions/${id}`,
+            getApiUrl(
+                `/api/transactions/${id}`),
             {
                 method: "GET",
                 headers: {
@@ -423,6 +480,7 @@ async function openEditTransaction(id) {
         if (!response.ok) {
             showTransactionsError(
                 "Could not load transaction.");
+
             return;
         }
 
@@ -443,7 +501,8 @@ async function openEditTransaction(id) {
 
         document.getElementById(
             "editTransactionDate").value =
-            toDateInputValue(transaction.date);
+            toDateInputValue(
+                transaction.date);
 
         document.getElementById(
             "editTransactionType").value =
@@ -476,12 +535,13 @@ async function updateTransaction(event) {
     event.preventDefault();
 
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     const id =
         Number(
             document.getElementById(
-                "editTransactionId").value);
+                "editTransactionId")
+                .value);
 
     const description =
         document.getElementById(
@@ -539,19 +599,24 @@ async function updateTransaction(event) {
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/transactions/${id}`,
+            getApiUrl(
+                `/api/transactions/${id}`),
             {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+                    "Content-Type":
+                        "application/json",
+
+                    "Authorization":
+                        `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     description,
                     amount,
                     date,
                     type,
-                    notes: notes || null,
+                    notes:
+                        notes || null,
                     categoryId
                 })
             });
@@ -604,7 +669,7 @@ async function createTransaction(event) {
     event.preventDefault();
 
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     const description =
         document.getElementById(
@@ -661,19 +726,24 @@ async function createTransaction(event) {
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/transactions",
+            getApiUrl(
+                "/api/transactions"),
             {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+                    "Content-Type":
+                        "application/json",
+
+                    "Authorization":
+                        `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     description,
                     amount,
                     date,
                     type,
-                    notes: notes || null,
+                    notes:
+                        notes || null,
                     categoryId
                 })
             });
@@ -684,12 +754,22 @@ async function createTransaction(event) {
         }
 
         if (!response.ok) {
-            const data =
-                await response.json();
+            let errorMessage =
+                "Transaction could not be created.";
+
+            try {
+                const data =
+                    await response.json();
+
+                errorMessage =
+                    data.message ??
+                    errorMessage;
+            }
+            catch {
+            }
 
             message.textContent =
-                data.message ??
-                "Transaction could not be created.";
+                errorMessage;
 
             return;
         }
@@ -724,15 +804,17 @@ async function deleteTransaction(id) {
     }
 
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/transactions/${id}`,
+            getApiUrl(
+                `/api/transactions/${id}`),
             {
                 method: "DELETE",
                 headers: {
-                    "Authorization": `Bearer ${token}`
+                    "Authorization":
+                        `Bearer ${token}`
                 }
             });
 
@@ -744,6 +826,7 @@ async function deleteTransaction(id) {
         if (!response.ok) {
             showTransactionsError(
                 "Transaction could not be deleted.");
+
             return;
         }
 
@@ -787,41 +870,6 @@ function setDefaultTransactionDate() {
         getTodayInputValue();
 }
 
-function getTodayInputValue() {
-    const today = new Date();
-
-    const year =
-        today.getFullYear();
-
-    const month =
-        String(today.getMonth() + 1)
-            .padStart(2, "0");
-
-    const day =
-        String(today.getDate())
-            .padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-}
-
-function toDateInputValue(value) {
-    const date =
-        new Date(value);
-
-    const year =
-        date.getFullYear();
-
-    const month =
-        String(date.getMonth() + 1)
-            .padStart(2, "0");
-
-    const day =
-        String(date.getDate())
-            .padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-}
-
 function showTransactionsError(messageText) {
     const message =
         document.getElementById(
@@ -834,43 +882,6 @@ function showTransactionsError(messageText) {
     message.textContent =
         messageText;
 
-    message.classList.remove("d-none");
-}
-
-function formatMoney(value) {
-    return new Intl.NumberFormat(
-        "bg-BG",
-        {
-            style: "currency",
-            currency: "EUR"
-        })
-        .format(value ?? 0);
-}
-
-function formatDate(value) {
-    return new Date(value)
-        .toLocaleDateString("bg-BG");
-}
-
-function escapeHtml(value) {
-    const element =
-        document.createElement("div");
-
-    element.textContent =
-        value ?? "";
-
-    return element.innerHTML;
-}
-
-function debounce(callback, delay) {
-    let timeoutId;
-
-    return (...args) => {
-        clearTimeout(timeoutId);
-
-        timeoutId =
-            setTimeout(
-                () => callback(...args),
-                delay);
-    };
+    message.classList.remove(
+        "d-none");
 }

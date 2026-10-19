@@ -25,15 +25,16 @@ let categories = [];
 
 async function loadCategories() {
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/categories",
+            getApiUrl("/api/categories"),
             {
                 method: "GET",
                 headers: {
-                    "Authorization": `Bearer ${token}`
+                    "Authorization":
+                        `Bearer ${token}`
                 }
             });
 
@@ -108,6 +109,7 @@ function renderCategoryList(
     container.innerHTML =
         categoryList
             .map(category => {
+
                 const badge =
                     category.isDefault
                         ? `
@@ -213,7 +215,7 @@ async function createCategory(event) {
     event.preventDefault();
 
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     const name =
         document.getElementById(
@@ -254,7 +256,7 @@ async function createCategory(event) {
 
     try {
         const response = await fetch(
-            "https://localhost:7063/api/categories",
+            getApiUrl("/api/categories"),
             {
                 method: "POST",
                 headers: {
@@ -322,7 +324,7 @@ async function createCategory(event) {
 
 async function openEditCategory(id) {
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     const message =
         document.getElementById(
@@ -334,7 +336,8 @@ async function openEditCategory(id) {
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/categories/${id}`,
+            getApiUrl(
+                `/api/categories/${id}`),
             {
                 method: "GET",
                 headers: {
@@ -405,7 +408,7 @@ async function updateCategory(event) {
     event.preventDefault();
 
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     const id =
         Number(
@@ -443,7 +446,10 @@ async function updateCategory(event) {
 
     message.textContent = "";
 
-    if (!id || !name || !type) {
+    if (!id ||
+        !name ||
+        !type) {
+
         message.textContent =
             "Please fill in all required fields.";
 
@@ -452,7 +458,8 @@ async function updateCategory(event) {
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/categories/${id}`,
+            getApiUrl(
+                `/api/categories/${id}`),
             {
                 method: "PUT",
                 headers: {
@@ -526,11 +533,12 @@ async function deleteCategory(id) {
     }
 
     const token =
-        localStorage.getItem("expenseTrackerToken");
+        getAuthToken();
 
     try {
         const response = await fetch(
-            `https://localhost:7063/api/categories/${id}`,
+            getApiUrl(
+                `/api/categories/${id}`),
             {
                 method: "DELETE",
                 headers: {
@@ -601,15 +609,6 @@ function showCategoriesError(messageText) {
     message.textContent =
         messageText;
 
-    message.classList.remove("d-none");
-}
-
-function escapeHtml(value) {
-    const element =
-        document.createElement("div");
-
-    element.textContent =
-        value ?? "";
-
-    return element.innerHTML;
+    message.classList.remove(
+        "d-none");
 }
